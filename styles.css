@@ -1,0 +1,118 @@
+body {
+    font-family: "Courier New", serif;
+    background-color: antiquewhite;
+    margin: 0;
+}
+
+button {
+    position: relative;
+    -webkit-appearance: none;
+    font-size: 1.5em;
+    background-color: lightsalmon;
+    border: 1px solid transparent;
+    font-family: inherit;
+    padding: 0.3em 1em;
+    box-shadow: 0 4px black;
+}
+
+button:hover {
+    box-shadow: 0 6px black;
+    top: -2px;
+}
+
+button:active {
+    box-shadow: 0 0 black;
+    top: 4px;
+}
+
+button:focus {
+    /*outline: 1px solid lightblue;*/
+    outline: none;
+}
+
+#words-container {
+    position: relative;
+    margin: auto;
+}
+
+#words {
+    display: flex;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.square {
+    position: relative;
+    flex-basis: calc(20% - 10px);
+    margin: 5px;
+    box-sizing: border-box;
+    border-radius: 0.33em;
+}
+
+.square::before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+}
+
+.square.with-contents {
+    border: 0.06em solid #000;
+    border-top-width: 0.04em;
+    border-bottom-width: 0.1em;
+    background-color: lightgray;
+}
+
+.square.draggable {
+    background-color: white;
+    cursor: grab;
+}
+
+.square.draggable:hover {
+    background-color: lightyellow;
+}
+
+.square.draggable:active {
+    border-top-width: 0.1em;
+    border-bottom-width: 0.04em;
+}
+
+.square.empty {
+    background-color: white !important;
+    border: 0.04em solid transparent !important;
+}
+
+.square.draggable.complete {
+    background-color: lightgreen;
+}
+
+.square.draggable.shelved {
+    position: relative;
+    background-color: white;
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-block;
+}
+
+.square .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    text-align: center;
+
+}
+
+#letter-bar {
+    width: 100%;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+#menu {
+    padding: 1em;
+    box-sizing: border-box;
+}
+

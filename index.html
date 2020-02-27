@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Five Letters</title>
+    <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="mobile-web-app-capable">
+    <link href="styles.css" rel="stylesheet"/>
+    <script src="./word_indices.js"></script>
+</head>
+<body>
+<div id="words-container">
+    <div id="words"></div>
+</div>
+<div id="letter-bar"></div>
+<div id="menu">
+    <button id="hint" onclick="hint()">hint</button>
+</div>
+<script>
+
+    let wordAttempt;
+    let filled = false;
+    while (!filled) {
+        wordAttempt = [[], []];
+        try {
+            wordAttempt[0].push(word_indices[0][Math.floor(Math.random() * word_indices[0].length)]);
+            let wordSlice = wordAttempt[0][0].charAt(1);
+            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
+            wordSlice = wordAttempt[0][0].charAt(2);
+            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
+            wordSlice = wordAttempt[0][0].charAt(3);
+            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
+            wordSlice = wordAttempt[1][0].charAt(2) + wordAttempt[1][1].charAt(2) + wordAttempt[1][2].charAt(2);
+            wordAttempt[0].push(word_indices[3][wordSlice][Math.floor(Math.random() * word_indices[3][wordSlice].length)]);
+            wordSlice = wordAttempt[1][0].charAt(3) + wordAttempt[1][1].charAt(3) + wordAttempt[1][2].charAt(3);
+            wordAttempt[0].push(word_indices[3][wordSlice][Math.floor(Math.random() * word_indices[3][wordSlice].length)]);
+            filled = true;
+        } catch (e) {
+            console.log('failed');
+        }
+    }
+    const letterMatrix = [];
+    for (let i = 0; i < 5; i++) {
+        letterMatrix.push([]);
+        for (let j = 0; j < 5; j++) {
+            if (i % 4 === 0 && j % 4 === 0) {
+                letterMatrix[i].push('');
+            } else if (i === 0) {
+                letterMatrix[i].push(wordAttempt[0][j - 1].charAt(0));
+            } else if (i === 4) {
+                letterMatrix[i].push(wordAttempt[0][j - 1].charAt(4));
+            } else {
+                letterMatrix[i].push(wordAttempt[1][i - 1].charAt(j));
+            }
+        }
+    }
+
+    function Board(letterMatrix) {
+        this.letterMatrix = letterMatrix;
+        this.currentLetterMatrix = letterMatrix.map((letterRow, i) => letterRow.map((letter, j) => {
+            if (i % (letterMatrix.length - 1) !== 0 && j % (letterRow.length - 1) !== 0) {
+                return '';
+            } else {
+                return letter;
+            }
+        }));
+        this.focusedIndex = -1;
+        this.complete = false;
+        const unEnteredLetters = [];
+        for (let i = 0; i < this.letterMatrix.length; i++) {
+            for (let j = 0; j < this.letterMatrix[0].length; j++) {
+                if (i % (this.letterMatrix.length - 1) !== 0 && j % (this.letterMatrix[0].length - 1) !== 0) {
+                    if (!this.currentLetterMatrix[i][j]) {
+                        const currentLetter = this.letterMatrix[i][j];
+                        unEnteredLetters.push(currentLetter);
+                    }
+                }
+            }
+        }
+        this.shelfLetters = unEnteredLetters;
+
+        this.getSquare = (i, j, letter, draggable, shelf, shelfIndex) => {
+            const square = document.createElement('div');
+            square.classList.add('square');
+            square.id = letter;
+            if (letter) {
+                square.classList.add('with-contents');
+            }
+            if (draggable) {
+                square.classList.add('draggable');
+                square.onclick = () => this.changeBoard(i, j, letter, shelf, shelfIndex);
+                if (!letter) {
+                    square.classList.add('empty');
+                }
+                if (this.complete) {
+                    square.classList.add('complete');
+                }
+            }
+            if (shelf) {
+                square.classList.add('shelved');
+            }
+            const content = document.createElement('div');
+            content.classList.add('content');
+            content.appendChild(document.createTextNode(letter));
+            square.appendChild(content);
+            return square;
+        };
+
+        this.drawBoard = () => {
+            document.getElementById('words').innerHTML = '';
+            for (let i = 0; i < this.letterMatrix.length; i++) {
+                for (let j = 0; j < this.letterMatrix[0].length; j++) {
+                    const currentLetter = this.currentLetterMatrix[i][j];
+                    document.getElementById('words').appendChild(this.getSquare(i, j, currentLetter, i % (this.letterMatrix.length - 1) !== 0 && j % (this.letterMatrix[0].length - 1) !== 0, false))
+                }
+            }
+        };
+
+        this.drawShelf = () => {
+            const shelf = document.getElementById('letter-bar');
+            shelf.innerHTML = '';
+            this.shelfLetters.forEach((letter, i) => {
+                shelf.appendChild(this.getSquare(0, 0, letter, true, true, i));
+            });
+        };
+
+        this.changeBoard = (i, j, letter = '', shelf, shelfIndex) => {
+            if (shelf) {
+                this.focusedIndex = shelfIndex;
+            }
+            else if (letter) {
+                this.currentLetterMatrix[i][j] = '';
+                this.shelfLetters.push(letter);
+            }
+            else if (this.focusedIndex !== -1) {
+                this.currentLetterMatrix[i][j] = this.shelfLetters[this.focusedIndex];
+                this.shelfLetters.splice(this.focusedIndex, 1);
+                this.focusedIndex = -1;
+            }
+            this.checkComplete();
+            this.drawBoard();
+            this.drawShelf();
+        };
+
+        this.checkComplete = () => {
+            let complete = true;
+            for (let i = 0; i < this.letterMatrix.length; i++) {
+                for (let j = 0; j < this.letterMatrix[0].length; j++) {
+                    if (this.letterMatrix[i][j] !== this.currentLetterMatrix[i][j]) {
+                        complete = false;
+                    }
+                }
+            }
+            this.complete = complete;
+        };
+
+        this.hint = () => {
+            console.log('This will give you a hint');
+        }
+    }
+
+    const board = new Board(letterMatrix);
+    board.drawBoard();
+    board.drawShelf();
+    console.log(wordAttempt);
+
+    function hint() {
+        board.hint();
+    }
+
+
+    window.addEventListener('resize', resizeWindow);
+
+    function resizeWindow() {
+        const wordsContainer = document.getElementById('words-container');
+        const constraint = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+        const marginOffset = 3 * 5;
+        wordsContainer.style.width = (constraint - marginOffset) + 'px';
+        wordsContainer.style.fontSize = (constraint / 8) + 'px';
+        const letterBar = document.getElementById('letter-bar');
+        letterBar.style.fontSize = (constraint / 8) + 'px';
+    }
+
+    resizeWindow();
+</script>
+</body>
+</html>
