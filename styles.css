@@ -10,6 +10,7 @@ button {
     font-size: 1.5em;
     background-color: lightsalmon;
     border: 1px solid transparent;
+    border-radius: 3em;
     font-family: inherit;
     padding: 0.3em 1em;
     box-shadow: 0 4px black;
@@ -109,6 +110,7 @@ button:focus {
     width: 100%;
     box-sizing: border-box;
     margin: auto;
+    text-align: center;
 }
 
 #menu {

@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Five Letters</title>
+    <title>Wordz</title>
     <meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="yes" name="mobile-web-app-capable">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link href="styles.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
     <script src="./word_indices.js"></script>
 </head>
 <body ontouchstart="">
@@ -158,6 +159,16 @@
 
         this.hint = () => {
             console.log('This will give you a hint');
+            let hintGiven = false;
+            while (!hintGiven) {
+                const shuffled = _.shuffle(this.shelfLetters);
+                this.shelfLetters.forEach((letter, i) => {
+
+                });
+                if (!this.shelfLetters.length) {
+
+                }
+            }
         }
     }
 
@@ -177,10 +188,12 @@
         const wordsContainer = document.getElementById('words-container');
         const constraint = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
         const marginOffset = 3 * 5;
-        wordsContainer.style.width = (constraint - marginOffset) + 'px';
-        wordsContainer.style.fontSize = (constraint / 8) + 'px';
+        const maxWidth = constraint - marginOffset;
+        const constrainedWidth = maxWidth > 500 ? 500 : maxWidth;
+        wordsContainer.style.width = constrainedWidth + 'px';
+        wordsContainer.style.fontSize = (constrainedWidth / 8) + 'px';
         const letterBar = document.getElementById('letter-bar');
-        letterBar.style.fontSize = (constraint / 8) + 'px';
+        letterBar.style.fontSize = (constrainedWidth / 8) + 'px';
     }
 
     resizeWindow();
