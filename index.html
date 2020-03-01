@@ -80,7 +80,7 @@
                 }
             }
         }
-        this.shelfLetters = unEnteredLetters;
+        this.shelfLetters = _.shuffle(unEnteredLetters);
 
         this.getSquare = (i, j, letter, draggable, shelf, shelfIndex) => {
             const square = document.createElement('div');
