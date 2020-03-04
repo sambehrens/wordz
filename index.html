@@ -189,7 +189,6 @@
         this.hint = () => {
             let hintGiven = false;
             let shuffled = _.shuffle(this.shelfLetters);
-            shuffled = this.shelfLetters;
             shuffled.some(letter => {
                 // if the spot where the letter would go is taken then go to the next letter
                 // if the spot is not taken then add it to the spot and mark hint given and return
