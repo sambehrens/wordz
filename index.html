@@ -15,6 +15,7 @@
     <meta name="application-name" content="Wordz"/>
     <link href="styles.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
     <script src="./word_indices.js"></script>
 </head>
 <body ontouchstart="">
@@ -24,47 +25,56 @@
 <div id="letter-bar"></div>
 <div id="menu">
     <button id="hint" onclick="hint()">hint</button>
+    <button id="restart" onclick="restart()">restart</button>
+    <button id="shuffle" onclick="shuffle()">shuffle</button>
 </div>
 <script>
 
-    let wordAttempt;
-    let filled = false;
-    while (!filled) {
-        wordAttempt = [[], []];
-        try {
-            wordAttempt[0].push(word_indices[0][Math.floor(Math.random() * word_indices[0].length)]);
-            let wordSlice = wordAttempt[0][0].charAt(1);
-            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
-            wordSlice = wordAttempt[0][0].charAt(2);
-            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
-            wordSlice = wordAttempt[0][0].charAt(3);
-            wordAttempt[1].push(word_indices[1][wordSlice][Math.floor(Math.random() * word_indices[1][wordSlice].length)]);
-            wordSlice = wordAttempt[1][0].charAt(2) + wordAttempt[1][1].charAt(2) + wordAttempt[1][2].charAt(2);
-            wordAttempt[0].push(word_indices[3][wordSlice][Math.floor(Math.random() * word_indices[3][wordSlice].length)]);
-            wordSlice = wordAttempt[1][0].charAt(3) + wordAttempt[1][1].charAt(3) + wordAttempt[1][2].charAt(3);
-            wordAttempt[0].push(word_indices[3][wordSlice][Math.floor(Math.random() * word_indices[3][wordSlice].length)]);
-            filled = true;
-        } catch (e) {
-            console.log('failed');
-        }
-    }
-    const letterMatrix = [];
-    for (let i = 0; i < 5; i++) {
-        letterMatrix.push([]);
-        for (let j = 0; j < 5; j++) {
-            if (i % 4 === 0 && j % 4 === 0) {
-                letterMatrix[i].push('');
-            } else if (i === 0) {
-                letterMatrix[i].push(wordAttempt[0][j - 1].charAt(0));
-            } else if (i === 4) {
-                letterMatrix[i].push(wordAttempt[0][j - 1].charAt(4));
-            } else {
-                letterMatrix[i].push(wordAttempt[1][i - 1].charAt(j));
-            }
-        }
+    function Game() {
+        this.board = new Board();
+
+        this.restart = () => this.board = new Board();
     }
 
-    function Board(letterMatrix) {
+    function Board() {
+        let wordAttempt;
+        let filled = false;
+        const rand = upper => _.random(upper - 1);
+        while (!filled) {
+            wordAttempt = [[], []];
+            try {
+                wordAttempt[0].push(word_indices[0][rand(word_indices[0].length)]);
+                let wordSlice = wordAttempt[0][0].charAt(1);
+                wordAttempt[1].push(word_indices[1][wordSlice][rand(word_indices[1][wordSlice].length)]);
+                wordSlice = wordAttempt[0][0].charAt(2);
+                wordAttempt[1].push(word_indices[1][wordSlice][rand(word_indices[1][wordSlice].length)]);
+                wordSlice = wordAttempt[0][0].charAt(3);
+                wordAttempt[1].push(word_indices[1][wordSlice][rand(word_indices[1][wordSlice].length)]);
+                wordSlice = wordAttempt[1][0].charAt(2) + wordAttempt[1][1].charAt(2) + wordAttempt[1][2].charAt(2);
+                wordAttempt[0].push(word_indices[3][wordSlice][rand(word_indices[3][wordSlice].length)]);
+                wordSlice = wordAttempt[1][0].charAt(3) + wordAttempt[1][1].charAt(3) + wordAttempt[1][2].charAt(3);
+                wordAttempt[0].push(word_indices[3][wordSlice][rand(word_indices[3][wordSlice].length)]);
+                filled = true;
+            } catch (e) {
+                console.log('failed');
+            }
+        }
+        const letterMatrix = [];
+        for (let i = 0; i < 5; i++) {
+            letterMatrix.push([]);
+            for (let j = 0; j < 5; j++) {
+                if (i % 4 === 0 && j % 4 === 0) {
+                    letterMatrix[i].push('');
+                } else if (i === 0) {
+                    letterMatrix[i].push(wordAttempt[0][j - 1].charAt(0));
+                } else if (i === 4) {
+                    letterMatrix[i].push(wordAttempt[0][j - 1].charAt(4));
+                } else {
+                    letterMatrix[i].push(wordAttempt[1][i - 1].charAt(j));
+                }
+            }
+        }
+
         this.letterMatrix = letterMatrix;
         this.currentLetterMatrix = letterMatrix.map((letterRow, i) => letterRow.map((letter, j) => {
             if (i % (letterMatrix.length - 1) !== 0 && j % (letterRow.length - 1) !== 0) {
@@ -73,19 +83,26 @@
                 return letter;
             }
         }));
-        this.focusedIndex = -1;
-        this.complete = false;
-        const unEnteredLetters = [];
-        for (let i = 0; i < this.letterMatrix.length; i++) {
-            for (let j = 0; j < this.letterMatrix[0].length; j++) {
-                if (i % (this.letterMatrix.length - 1) !== 0 && j % (this.letterMatrix[0].length - 1) !== 0) {
-                    if (!this.currentLetterMatrix[i][j]) {
-                        const currentLetter = this.letterMatrix[i][j];
-                        unEnteredLetters.push(currentLetter);
+
+        this.loop = (matrix, fun) => {
+            for (let i = 0; i < matrix.length; i++) {
+                for (let j = 0; j < matrix[0].length; j++) {
+                    if (i % (matrix.length - 1) !== 0 && j % (matrix[0].length - 1) !== 0) {
+                        const stop = fun(matrix[i][j], i, j) === 'stop';
+                        if (stop) {
+                            return;
+                        }
                     }
                 }
             }
-        }
+        };
+
+        this.focusedIndex = -1;
+        this.complete = false;
+        const unEnteredLetters = [];
+        this.loop(this.letterMatrix, letter => {
+            unEnteredLetters.push(letter);
+        });
         this.shelfLetters = _.shuffle(unEnteredLetters);
 
         this.getSquare = (i, j, letter, draggable, shelf, shelfIndex) => {
@@ -107,6 +124,9 @@
             }
             if (shelf) {
                 square.classList.add('shelved');
+                if (shelfIndex === this.focusedIndex) {
+                    square.classList.add('focused');
+                }
             }
             const content = document.createElement('div');
             content.classList.add('content');
@@ -136,55 +156,98 @@
         this.changeBoard = (i, j, letter = '', shelf, shelfIndex) => {
             if (shelf) {
                 this.focusedIndex = shelfIndex;
-            }
-            else if (letter) {
+                this.drawShelf();
+            } else if (letter) {
                 this.currentLetterMatrix[i][j] = '';
                 this.shelfLetters.push(letter);
-            }
-            else if (this.focusedIndex !== -1) {
+                this.focusedIndex = this.shelfLetters.length - 1
+
+                this.checkComplete();
+                this.drawBoard();
+                this.drawShelf();
+            } else if (this.focusedIndex !== -1) {
                 this.currentLetterMatrix[i][j] = this.shelfLetters[this.focusedIndex];
                 this.shelfLetters.splice(this.focusedIndex, 1);
                 this.focusedIndex = -1;
+
+                this.checkComplete();
+                this.drawBoard();
+                this.drawShelf();
             }
-            this.checkComplete();
-            this.drawBoard();
-            this.drawShelf();
         };
 
         this.checkComplete = () => {
             let complete = true;
-            for (let i = 0; i < this.letterMatrix.length; i++) {
-                for (let j = 0; j < this.letterMatrix[0].length; j++) {
-                    if (this.letterMatrix[i][j] !== this.currentLetterMatrix[i][j]) {
-                        complete = false;
-                    }
+            this.loop(this.letterMatrix, (letter, i, j) => {
+                if (letter !== this.currentLetterMatrix[i][j]) {
+                    complete = false;
                 }
-            }
+            });
             this.complete = complete;
         };
 
         this.hint = () => {
-            console.log('This will give you a hint');
             let hintGiven = false;
-            while (!hintGiven) {
-                const shuffled = _.shuffle(this.shelfLetters);
-                this.shelfLetters.forEach((letter, i) => {
-
+            let shuffled = _.shuffle(this.shelfLetters);
+            shuffled = this.shelfLetters;
+            shuffled.some(letter => {
+                // if the spot where the letter would go is taken then go to the next letter
+                // if the spot is not taken then add it to the spot and mark hint given and return
+                this.loop(this.letterMatrix, (currentLetter, i, j) => {
+                    if (!this.currentLetterMatrix[i][j]) {
+                        if (letter === currentLetter) {
+                            this.currentLetterMatrix[i][j] = currentLetter;
+                            const indexToRemove = _.findIndex(this.shelfLetters, shelfLetter => shelfLetter === currentLetter);
+                            this.shelfLetters.splice(indexToRemove, 1);
+                            hintGiven = true;
+                            return 'stop';
+                        }
+                    }
                 });
-                if (!this.shelfLetters.length) {
-
-                }
+                return hintGiven;
+            });
+            if (this.shelfLetters.length && !hintGiven) {
+                // add the first letter in shelf letters to board and
+                // remove the letter that is in it spot and put it in the shelf
+                this.loop(this.letterMatrix, (currentLetter, i, j) => {
+                    if (shuffled[0] === currentLetter) {
+                        const originalLetter = this.currentLetterMatrix[i][j];
+                        this.currentLetterMatrix[i][j] = currentLetter;
+                        const indexToRemove = _.findIndex(this.shelfLetters, shelfLetter => shelfLetter === currentLetter);
+                        this.shelfLetters.splice(indexToRemove, 1);
+                        this.shelfLetters.push(originalLetter);
+                        return 'stop';
+                    }
+                });
             }
-        }
+            this.checkComplete();
+            this.drawShelf();
+            this.drawBoard();
+        };
+
+        this.shuffle = () => {
+            this.shelfLetters = _.shuffle(this.shelfLetters);
+            this.drawShelf();
+        };
+
+
+        this.drawBoard();
+        this.drawShelf();
+        console.log(wordAttempt);
     }
 
-    const board = new Board(letterMatrix);
-    board.drawBoard();
-    board.drawShelf();
-    console.log(wordAttempt);
+    const game = new Game();
 
     function hint() {
-        board.hint();
+        game.board.hint();
+    }
+
+    function restart() {
+        game.restart();
+    }
+
+    function shuffle() {
+        game.board.shuffle();
     }
 
 

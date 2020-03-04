@@ -1,5 +1,5 @@
 body {
-    font-family: "Courier New", serif;
+    font-family: 'Cutive Mono', monospace;
     background-color: antiquewhite;
     margin: 0;
 }
@@ -78,8 +78,10 @@ button:focus {
 }
 
 .square.empty {
-    background-color: white !important;
-    border: 0.04em solid transparent !important;
+    background-color: #f5dcbc !important;
+    border: 0.06em solid #edcca1;
+    border-bottom-width: 0.04em;
+    border-top-width: 0.1em;
 }
 
 .square.draggable.complete {
@@ -92,6 +94,10 @@ button:focus {
     width: 1.5em;
     height: 1.5em;
     display: inline-block;
+}
+
+.square.draggable.shelved.focused {
+    border-color: royalblue;
 }
 
 .square .content {
