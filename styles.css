@@ -104,9 +104,10 @@ button:focus {
   border: 0.06em solid var(--empty-square-border-color);
   border-radius: 0;
 }
-
-.square.empty:hover {
-  border-color: var(--empty-square-border-color-hover);
+@media (hover: hover) {
+  .square.empty:hover {
+    border-color: var(--empty-square-border-color-hover);
+  }
 }
 
 .square.draggable.complete {
