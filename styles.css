@@ -35,14 +35,10 @@ button {
   line-height: 1;
 }
 
-button:hover {
-  background-color: #ededed;
-}
-
-button:active {
-}
-
-button:focus {
+@media (hover: hover) {
+  button:hover {
+    background-color: #ededed;
+  }
 }
 
 .button-icon {
@@ -104,6 +100,7 @@ button:focus {
   border: 0.06em solid var(--empty-square-border-color);
   border-radius: 0;
 }
+
 @media (hover: hover) {
   .square.empty:hover {
     border-color: var(--empty-square-border-color-hover);
