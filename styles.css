@@ -1,126 +1,145 @@
+:root {
+  --background-color: white;
+  --text-color: #24292f;
+  --success-background-color: #6aaa64;
+  --success-text-color: white;
+  --permanent-letter-background-color: #787c7e;
+  --permanent-letter-text-color: white;
+  --unplaced-letter-background-color: white;
+  --unplaced-letter-text-color: #24292f;
+  --empty-square-border-color: #d3d6da;
+  --empty-square-border-color-hover: #abb1ba;
+}
+
 body {
-    font-family: 'Cutive Mono', monospace;
-    background-color: antiquewhite;
-    margin: 0;
+  font-family: "Helvetica Neue", "Clear Sans", sans-serif;
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: var(--background-color);
+  margin: 0;
 }
 
 button {
-    position: relative;
-    -webkit-appearance: none;
-    font-size: 1.5em;
-    background-color: lightsalmon;
-    border: 1px solid transparent;
-    border-radius: 3em;
-    font-family: inherit;
-    padding: 0.3em 1em;
-    box-shadow: 0 4px black;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  -webkit-appearance: none;
+  font-size: 1.3em;
+  font-weight: bold;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 3em;
+  font-family: inherit;
+  padding: 0.5em 0.6em;
+  line-height: 1;
 }
 
 button:hover {
-    box-shadow: 0 6px black;
-    top: -2px;
+  background-color: #ededed;
 }
 
 button:active {
-    box-shadow: 0 0 black;
-    top: 4px;
 }
 
 button:focus {
-    /*outline: 1px solid lightblue;*/
-    outline: none;
+}
+
+.button-icon {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  height: 1em;
+  overflow: visible;
+  text-rendering: auto;
+  line-height: 1;
+  fill: inherit;
+  pointer-events: none;
 }
 
 #words-container {
-    position: relative;
-    margin: auto;
+  position: relative;
+  margin: auto;
 }
 
 #words {
-    display: flex;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .square {
-    position: relative;
-    flex-basis: calc(20% - 10px);
-    margin: 5px;
-    box-sizing: border-box;
-    border-radius: 0.33em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-basis: calc(20% - 10px);
+  margin: 5px;
+  box-sizing: border-box;
+  user-select: none;
 }
 
 .square::before {
-    content: '';
-    display: block;
-    padding-top: 100%;
+  content: "";
+  display: block;
+  padding-top: 100%;
 }
 
 .square.with-contents {
-    border: 0.06em solid #000;
-    border-top-width: 0.04em;
-    border-bottom-width: 0.1em;
-    background-color: lightgray;
+  background-color: var(--permanent-letter-background-color);
+  color: var(--permanent-letter-text-color);
 }
 
 .square.draggable {
-    background-color: white;
-    cursor: grab;
-}
-
-.square.draggable:hover {
-    background-color: lightyellow;
-}
-
-.square.draggable:active {
-    border-top-width: 0.1em;
-    border-bottom-width: 0.04em;
+  border: 0.06em solid black;
+  background-color: var(--unplaced-letter-background-color);
+  color: var(--unplaced-letter-text-color);
+  cursor: grab;
+  border-radius: 0.1em;
 }
 
 .square.empty {
-    background-color: #f5dcbc !important;
-    border: 0.06em solid #edcca1;
-    border-bottom-width: 0.04em;
-    border-top-width: 0.1em;
+  border: 0.06em solid var(--empty-square-border-color);
+  border-radius: 0;
+}
+
+.square.empty:hover {
+  border-color: var(--empty-square-border-color-hover);
 }
 
 .square.draggable.complete {
-    background-color: lightgreen;
+  background-color: var(--success-background-color);
+  color: var(--success-text-color);
+  /* border-radius: 0; */
+  border: none;
 }
 
 .square.draggable.shelved {
-    position: relative;
-    background-color: white;
-    width: 1.5em;
-    height: 1.5em;
-    display: inline-block;
+  background-color: var(--unplaced-letter-background-color);
+  color: var(--unplaced-letter-text-color);
+  width: 1.55em;
+  height: 1.55em;
 }
 
 .square.draggable.shelved.focused {
-    border-color: royalblue;
-}
-
-.square .content {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-
-    text-align: center;
-
+  box-shadow: 0 0 0 6px #85c0f9;
 }
 
 #letter-bar {
-    width: 100%;
-    box-sizing: border-box;
-    margin: auto;
-    text-align: center;
+  box-sizing: border-box;
+  margin: auto;
+  margin-top: 1em;
+  text-align: center;
+  line-height: 1;
 }
 
 #menu {
-    padding: 1em;
-    box-sizing: border-box;
+  padding: 0.5em;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
 }
-
