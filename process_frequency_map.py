@@ -26,7 +26,8 @@ def main():
         for word in in_order:
             accepted = False
             while not accepted:
-                rating = input(f'{word} (1: good, 2: eh, 3: bad): ')
+                last = lambda x: f'[{x}]' if x == last_input else x
+                rating = input(f'{word} ({last(1)}: good, {last(2)}: eh, {last(3)}: bad): ')
                 try:
                     if rating.strip() == "" and last_input:
                         rating = last_input
