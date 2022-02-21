@@ -186,9 +186,17 @@
             }
           }
           const content = document.createElement("div");
+          const letterSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          const letterText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          letterSvg.setAttribute("viewBox", "0 0 18 18");
+          letterText.setAttribute("x", "50%");
+          letterText.setAttribute("y", "60%");
+          letterText.appendChild(document.createTextNode(letter));
           content.classList.add("content");
-          content.appendChild(document.createTextNode(letter));
-          square.appendChild(content);
+          letterSvg.appendChild(letterText);
+          <!-- content.appendChild(letterSvg); -->
+          <!-- content.appendChild(document.createTextNode(letter)); -->
+          square.appendChild(letterSvg);
           return square;
         };
 
@@ -318,27 +326,6 @@
       function restart() {
         game.restart();
       }
-
-      window.addEventListener("resize", resizeWindow);
-
-      function resizeWindow() {
-        const wordsContainer = document.getElementById("words-container");
-        const constraint =
-          window.innerWidth < window.innerHeight
-            ? window.innerWidth
-            : window.innerHeight;
-        const marginOffset = 3 * 5;
-        const maxWidth = constraint - marginOffset;
-        const constrainedWidth = maxWidth > 500 ? 500 : maxWidth;
-        const fontSize = constrainedWidth / 9 + "px";
-        wordsContainer.style.width = constrainedWidth + "px";
-        wordsContainer.style.fontSize = fontSize;
-        const letterBar = document.getElementById("letter-bar");
-        letterBar.style.fontSize = fontSize;
-        letterBar.style.width = constrainedWidth + "px";
-      }
-
-      resizeWindow();
     </script>
   </body>
 </html>
