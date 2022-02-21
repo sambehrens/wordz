@@ -144,7 +144,7 @@ button {
 }
 
 .square.draggable.shelved.focused {
-  box-shadow: 0 0 0 1vw #85c0f9;
+  box-shadow: 0 0 0 var(--letter-gap) #85c0f9;
 }
 
 #letter-bar {
