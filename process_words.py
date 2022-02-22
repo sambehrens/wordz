@@ -3,7 +3,7 @@ from pprint import pprint, pformat
 from string import ascii_lowercase
 
 def main():
-    with open("five_letter_words.txt") as f:
+    with open("common_words.txt") as f:
         words = f.read().strip().split("\n")
 
     sorted_words = sorted(words, key=lambda x: x[1:-1])
