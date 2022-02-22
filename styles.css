@@ -102,6 +102,9 @@ button {
   flex-basis: calc(20% - 10px);
   box-sizing: border-box;
   user-select: none;
+
+  transition: transform 1s linear;
+  perspective: 1000px;
 }
 
 .square::before {
@@ -151,10 +154,12 @@ button {
 .square.draggable.complete {
   background-color: var(--success-background-color);
   border: none;
+  transform: rotateY(180deg);
 }
 
 .square.draggable.complete svg {
   fill: var(--success-text-color);
+  transform: rotateY(180deg);
 }
 
 .square.draggable.shelved {

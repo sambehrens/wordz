@@ -180,7 +180,8 @@ class Board {
         square.classList.add("empty");
       }
       if (this.complete) {
-        square.classList.add("complete");
+        // Give the complete squares a bit of an animation
+        setTimeout(() => square.classList.add("complete"), (i + j - 2) * 100);
       }
     }
     if (shelf) {
@@ -238,6 +239,7 @@ class Board {
   }
 
   changeBoard(i, j, letter = "", shelf, shelfIndex) {
+    if (this.complete) return;
     if (shelf) {
       this.focusedIndex = shelfIndex;
       this.drawShelf();
@@ -271,6 +273,7 @@ class Board {
   }
 
   hint() {
+    if (this.complete) return;
     let hintGiven = false;
     let shuffled = shuffleArr(this.shelfLetters);
     shuffled.some((letter) => {
