@@ -58,10 +58,18 @@ class WordSpace {
 
   /**
    * @param {string} [containing] If none provided, will return random word
+   * @param {[string]} [disallowed] Words that shouldn't be chosen
    * @returns {string|null}
    */
-  word(containing) {
-    if (!containing) return this.words[random(this.words.length)];
+  word(containing, disallowed = []) {
+    // If there is no containing then we can find an allowed random word
+    if (!containing) {
+      let word = "";
+      do {
+        word = this.words[random(this.words.length)];
+      } while (disallowed.includes(word));
+      return word;
+    }
 
     let firstChar = containing.charAt(0);
     let index = this.letterIndices[firstChar];
@@ -81,6 +89,14 @@ class WordSpace {
         reachedPossibleWords = true;
       } else if (reachedPossibleWords) {
         break;
+      }
+    }
+
+    // Remove disallowed words from possible words so we don't get duplicates
+    for (const word of disallowed) {
+      let index = possibleWords.indexOf(word);
+      if (index > -1) {
+        possibleWords.splice(index, 1);
       }
     }
 
@@ -147,22 +163,28 @@ class Board {
   }
 
   generateGameWords() {
+    console.time('generating matrix');
     let gameWords;
     let filled = false;
     while (!filled) {
       gameWords = [[], []];
       gameWords[0].push(this.wordSpace.word());
-      gameWords[0].push(this.wordSpace.word());
-      gameWords[0].push(this.wordSpace.word());
+      gameWords[0].push(this.wordSpace.word(null, gameWords[0]));
+      gameWords[0].push(this.wordSpace.word(null, gameWords[0]));
       let slice1 = gameWords[0][0][1] + gameWords[0][1][1] + gameWords[0][2][1];
       let slice2 = gameWords[0][0][2] + gameWords[0][1][2] + gameWords[0][2][2];
       let slice3 = gameWords[0][0][3] + gameWords[0][1][3] + gameWords[0][2][3];
-      gameWords[1].push(this.wordSpace.word(slice1));
-      gameWords[1].push(this.wordSpace.word(slice2));
-      gameWords[1].push(this.wordSpace.word(slice3));
+      gameWords[1].push(this.wordSpace.word(slice1, gameWords[0]));
+      gameWords[1].push(
+        this.wordSpace.word(slice2, gameWords[0].concat(gameWords[1]))
+      );
+      gameWords[1].push(
+        this.wordSpace.word(slice3, gameWords[0].concat(gameWords[1]))
+      );
       filled = gameWords[1].every(Boolean);
       console.log(filled ? "success" : "failed");
     }
+    console.timeEnd('generating matrix');
     return gameWords;
   }
 
