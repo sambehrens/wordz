@@ -156,6 +156,7 @@ class Board {
       unEnteredLetters.push(letter);
     });
     this.shelfLetters = shuffleArr(unEnteredLetters);
+    this.hintsGiven = [];
 
     this.drawBoard();
     this.drawShelf();
@@ -163,7 +164,7 @@ class Board {
   }
 
   generateGameWords() {
-    console.time('generating matrix');
+    console.time("generating matrix");
     let gameWords;
     let filled = false;
     while (!filled) {
@@ -184,7 +185,7 @@ class Board {
       filled = gameWords[1].every(Boolean);
       console.log(filled ? "success" : "failed");
     }
-    console.timeEnd('generating matrix');
+    console.timeEnd("generating matrix");
     return gameWords;
   }
 
@@ -192,6 +193,9 @@ class Board {
     const square = document.createElement("div");
     square.classList.add("square");
     square.id = letter;
+    if (this.hintsGiven.includes(`${i},${j}`)) {
+      square.classList.add("hint-given");
+    }
     if (letter) {
       square.classList.add("with-contents");
     }
@@ -236,6 +240,7 @@ class Board {
     for (let i = 0; i < this.letterMatrix.length; i++) {
       for (let j = 0; j < this.letterMatrix[0].length; j++) {
         const currentLetter = this.currentLetterMatrix[i][j];
+        const hinted = this.hintsGiven.includes(`${i},${j}`);
         document
           .getElementById("words")
           .appendChild(
@@ -244,7 +249,8 @@ class Board {
               j,
               currentLetter,
               i % (this.letterMatrix.length - 1) !== 0 &&
-                j % (this.letterMatrix[0].length - 1) !== 0,
+                j % (this.letterMatrix[0].length - 1) !== 0 &&
+                !hinted,
               false
             )
           );
@@ -261,7 +267,7 @@ class Board {
   }
 
   changeBoard(i, j, letter = "", shelf, shelfIndex) {
-    if (this.complete) return;
+    if (this.complete || this.hintsGiven.includes("i,j")) return;
     if (shelf) {
       this.focusedIndex = shelfIndex;
       this.drawShelf();
@@ -309,6 +315,7 @@ class Board {
               (shelfLetter) => shelfLetter === currentLetter
             );
             this.shelfLetters.splice(indexToRemove, 1);
+            this.hintsGiven.push(`${i},${j}`);
             hintGiven = true;
             return "stop";
           }
@@ -328,6 +335,7 @@ class Board {
           );
           this.shelfLetters.splice(indexToRemove, 1);
           this.shelfLetters.push(originalLetter);
+          this.hintsGiven.push(`${i},${j}`);
           return "stop";
         }
       });

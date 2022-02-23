@@ -6,6 +6,8 @@
   --success-text-color: white;
   --permanent-letter-background-color: #787c7e;
   --permanent-letter-text-color: white;
+  --hinted-letter-background-color: #d3d6da;
+  --hinted-letter-text-color: #24292f;
   --unplaced-letter-background-color: white;
   --unplaced-letter-text-color: #24292f;
   --unplaced-letter-border-color: #24292f;
@@ -25,6 +27,8 @@
     --success-text-color: #e8eaed;
     --permanent-letter-background-color: #3a3a3c;
     --permanent-letter-text-color: #e8eaed;
+    --hinted-letter-background-color: #818384;
+    --hinted-letter-text-color: #e8eaed;
     --unplaced-letter-background-color: #121213;
     --unplaced-letter-text-color: #e8eaed;
     --unplaced-letter-border-color: #e8eaed;
@@ -128,6 +132,14 @@ button {
 
 .square.with-contents svg {
   fill: var(--permanent-letter-text-color);
+}
+
+.square.hint-given {
+  background-color: var(--hinted-letter-background-color);
+}
+
+.square.hint-given svg {
+  fill: var(--hinted-letter-text-color);
 }
 
 .square.draggable {
