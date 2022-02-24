@@ -1,20 +1,24 @@
 import json
 from pprint import pprint, pformat
 from string import ascii_lowercase
+from functools import partial
 
-def filter_word(word: str) -> bool:
-    if len(word) != 5:
-        return False
-    for char in word.lower():
-        if char not in ascii_lowercase:
+
+def filter_word(length: int, word: str) -> bool:
+        if len(word) != length:
             return False
-    return True
+        for char in word.lower():
+            if char not in ascii_lowercase:
+                return False
+        return True
 
 def main():
+    word_length = 5
+
     with open("3esl.txt") as f:
         words = f.read().strip().split("\n")
 
-    words = list(map(str.lower, filter(filter_word, words)))
+    words = list(map(str.lower, filter(partial(filter_word, word_length), words)))
 
     print(len(words))
 
@@ -23,10 +27,10 @@ def main():
     letter_indices = { 'a': 0 }
 
     current_index = 0
-    for l, letter in enumerate(ascii_lowercase):
+    for l, letter in enumerate(ascii_lowercase[1:]):
         for i in range(current_index, len(sorted_words)):
-            if letter != sorted_words[i][1]:
-                letter_indices[ascii_lowercase[l + 1]] = i
+            if letter == sorted_words[i][1]:
+                letter_indices[letter] = i
                 current_index = i
                 break
 
@@ -38,8 +42,11 @@ def main():
 
     pprint(letter_indices)
 
-    with open("word_input.js", "w") as f:
-        f.write(f'word_input = {json_string}')
+    #  with open("3esl_5.txt", "w") as f:
+    #      f.write("\n".join(sorted_words))
+
+    #  with open("word_input.js", "w") as f:
+    #      f.write(f'word_input = {json_string}')
 
 
 if __name__ == "__main__":

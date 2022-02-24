@@ -2288,7 +2288,6 @@ brought
 brow
 browbeat
 brown
-Brownie
 brownie
 Brownies
 brownish
@@ -2473,7 +2472,6 @@ cabaret
 cabbage
 cabby
 cabin
-Cabinet
 cabinet
 cable
 cable car
@@ -2603,7 +2601,6 @@ capitalization
 capitalize
 capital letter
 capital punishment
-Capitol
 capitol
 capitulate
 capitulation
@@ -3003,7 +3000,6 @@ chew
 chewing gum
 chewy
 chic
-Chicano
 chick
 chickadee
 chicken
@@ -10766,7 +10762,6 @@ kite
 kitten
 kitty
 kiwi
-Kleenex
 kleptomaniac
 klutz
 klutzy
@@ -14298,7 +14293,6 @@ pike
 pile
 pileup
 pilfer
-Pilgrim
 pilgrim
 pilgrimage
 piling
@@ -15359,7 +15353,6 @@ purge
 purification
 purify
 purist
-Puritan
 puritan
 puritanical
 purity
@@ -17203,7 +17196,6 @@ semiprecious
 Sen.
 Senate
 senate
-Senator
 senator
 senatorial
 send
@@ -17582,7 +17574,6 @@ signing
 sign language
 signpost
 Sikh
-Sikhism
 silence
 silencer
 silent
@@ -20291,7 +20282,6 @@ two-piece
 two-tone
 tycoon
 tyke
-Tylenol
 type
 typecast
 typeface
@@ -21146,7 +21136,6 @@ walker
 walkie-talkie
 walk-in
 walking stick
-Walkman
 walkout
 walk-up
 wall
@@ -21368,7 +21357,6 @@ werewolves
 west
 westbound
 westerly
-Western
 western
 Westerner
 westerner
