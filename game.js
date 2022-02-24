@@ -51,40 +51,47 @@ class App {
 class WordSpace {
   static letters = "abcdefghijklmnopqrstuvwxyz";
 
-  constructor(wordInput) {
-    this.words = wordInput.words;
-    this.letterIndices = wordInput.indices;
+  constructor(...wordInputs) {
+    this.wordIndices = {};
+    wordInputs.forEach(
+      (wordInput) => (this.wordIndices[wordInput.words[0].length] = wordInput)
+    );
   }
 
   /**
+   * @param {number} length The length of the word
    * @param {string} [containing] If none provided, will return random word
    * @param {[string]} [disallowed] Words that shouldn't be chosen
    * @returns {string|null}
    */
-  word(containing, disallowed = []) {
+  word(length, containing, startIndex = 1, disallowed = []) {
+    const words = this.wordIndices[length].words;
+    const letterIndices = this.wordIndices[length].indices;
     // If there is no containing then we can find an allowed random word
     if (!containing) {
       let word = "";
       do {
-        word = this.words[random(this.words.length)];
+        word = words[random(words.length)];
       } while (disallowed.includes(word));
       return word;
     }
 
     let firstChar = containing.charAt(0);
-    let index = this.letterIndices[firstChar];
-    let endIndex =
+    let beginningIndex = letterIndices[firstChar];
+    let endOfMatchesIndex =
       firstChar === "z"
-        ? this.words.length
-        : this.letterIndices[
+        ? words.length
+        : letterIndices[
             WordSpace.letters[WordSpace.letters.indexOf(firstChar) + 1]
           ];
 
     let possibleWords = [];
     let reachedPossibleWords = false;
-    for (let i = index; i < endIndex; i++) {
-      let word = this.words[i];
-      if (word.slice(1, -1) === containing) {
+    for (let i = beginningIndex; i < endOfMatchesIndex; i++) {
+      let word = words[i];
+      if (
+        word.slice(startIndex, startIndex + containing.length) === containing
+      ) {
         possibleWords.push(word);
         reachedPossibleWords = true;
       } else if (reachedPossibleWords) {
@@ -108,7 +115,7 @@ class WordSpace {
 
 class Game {
   constructor() {
-    this.board = new Board(new WordSpace(word_input));
+    this.board = new Board(new WordSpace(word_input_5));
   }
 }
 
@@ -169,18 +176,30 @@ class Board {
     let filled = false;
     while (!filled) {
       gameWords = [[], []];
-      gameWords[0].push(this.wordSpace.word());
-      gameWords[0].push(this.wordSpace.word(null, gameWords[0]));
-      gameWords[0].push(this.wordSpace.word(null, gameWords[0]));
+      gameWords[0].push(this.wordSpace.word(5));
+      gameWords[0].push(this.wordSpace.word(5, null, undefined, gameWords[0]));
+      gameWords[0].push(this.wordSpace.word(5, null, undefined, gameWords[0]));
       let slice1 = gameWords[0][0][1] + gameWords[0][1][1] + gameWords[0][2][1];
       let slice2 = gameWords[0][0][2] + gameWords[0][1][2] + gameWords[0][2][2];
       let slice3 = gameWords[0][0][3] + gameWords[0][1][3] + gameWords[0][2][3];
-      gameWords[1].push(this.wordSpace.word(slice1, gameWords[0]));
       gameWords[1].push(
-        this.wordSpace.word(slice2, gameWords[0].concat(gameWords[1]))
+        this.wordSpace.word(5, slice1, undefined, gameWords[0])
       );
       gameWords[1].push(
-        this.wordSpace.word(slice3, gameWords[0].concat(gameWords[1]))
+        this.wordSpace.word(
+          5,
+          slice2,
+          undefined,
+          gameWords[0].concat(gameWords[1])
+        )
+      );
+      gameWords[1].push(
+        this.wordSpace.word(
+          5,
+          slice3,
+          undefined,
+          gameWords[0].concat(gameWords[1])
+        )
       );
       filled = gameWords[1].every(Boolean);
       console.log(filled ? "success" : "failed");

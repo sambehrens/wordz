@@ -13,7 +13,7 @@ def filter_word(length: int, word: str) -> bool:
         return True
 
 def main():
-    word_length = 5
+    word_length = 7
 
     with open("3esl.txt") as f:
         words = f.read().strip().split("\n")
@@ -45,8 +45,9 @@ def main():
     #  with open("3esl_5.txt", "w") as f:
     #      f.write("\n".join(sorted_words))
 
-    #  with open("word_input.js", "w") as f:
-    #      f.write(f'word_input = {json_string}')
+    # Uncomment to generate the word index
+    with open(f'word_input_{word_length}.js', "w") as f:
+        f.write(f'word_input_{word_length} = {json_string}')
 
 
 if __name__ == "__main__":
