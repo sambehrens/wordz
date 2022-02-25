@@ -98,89 +98,9 @@ button {
   max-width: 50vh;
 }
 
-.square {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
+letter-tile {
   flex-basis: calc(20% - 10px);
-  box-sizing: border-box;
-  user-select: none;
-
-  transition: transform 1s linear;
-  perspective: 1000px;
-}
-
-.square::before {
-  content: "";
-  display: block;
-  padding-top: 100%;
-}
-
-.square svg {
-  width: 70%;
-}
-
-.square svg text {
-  dominant-baseline: middle;
-  text-anchor: middle;
-}
-
-.square.with-contents {
-  background-color: var(--permanent-letter-background-color);
-}
-
-.square.with-contents svg {
-  fill: var(--permanent-letter-text-color);
-}
-
-.square.hint-given {
-  background-color: var(--hinted-letter-background-color);
-}
-
-.square.hint-given svg {
-  fill: var(--hinted-letter-text-color);
-}
-
-.square.draggable {
-  border: 2px solid var(--unplaced-letter-border-color);
-  background-color: var(--unplaced-letter-background-color);
-  cursor: grab;
-}
-
-.square.draggable svg {
-  fill: var(--unplaced-letter-text-color);
-}
-
-.square.empty {
-  border: 2px solid var(--empty-square-border-color);
-  border-radius: 0;
-}
-
-@media (hover: hover) {
-  .square.empty:hover {
-    border-color: var(--empty-square-border-color-hover);
-  }
-}
-
-.square.draggable.complete {
-  background-color: var(--success-background-color);
-  border: none;
-  transform: rotateY(180deg);
-}
-
-.square.draggable.complete svg {
-  fill: var(--success-text-color);
-  transform: rotateY(180deg);
-}
-
-.square.draggable.shelved {
-  background-color: var(--unplaced-letter-background-color);
-  color: var(--unplaced-letter-text-color);
-}
-
-.square.draggable.shelved.focused {
-  box-shadow: 0 0 0 var(--letter-gap) #85c0f9;
+  font-size: 0;
 }
 
 #letter-bar {
@@ -194,6 +114,12 @@ button {
   text-align: center;
   line-height: 1;
   max-width: var(--max-width);
+}
+
+.shelf-row {
+  display: flex;
+  gap: var(--letter-gap);
+  justify-content: center;
 }
 
 #menu {

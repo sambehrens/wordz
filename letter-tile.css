@@ -1,0 +1,90 @@
+* {
+  box-sizing: border-box;
+}
+
+.square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  user-select: none;
+
+  transition: transform 1s linear;
+  perspective: 1000px;
+
+  font-size: initial;
+  border: 2px solid transparent;
+}
+
+.square::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.square svg {
+  width: 70%;
+}
+
+.square svg text {
+  dominant-baseline: middle;
+  text-anchor: middle;
+}
+
+.square.permanent {
+  background-color: var(--permanent-letter-background-color);
+}
+
+.square.permanent svg {
+  fill: var(--permanent-letter-text-color);
+}
+
+.square.hinted {
+  background-color: var(--hinted-letter-background-color);
+}
+
+.square.hinted svg {
+  fill: var(--hinted-letter-text-color);
+}
+
+.square.guessed, .square.shelved, .square.focused {
+  border: 2px solid var(--unplaced-letter-border-color);
+  background-color: var(--unplaced-letter-background-color);
+  cursor: grab;
+}
+
+.square.guessed svg, .square.shelved svg, .square.focused svg {
+  fill: var(--unplaced-letter-text-color);
+}
+
+.square.empty {
+  border: 2px solid var(--empty-square-border-color);
+  border-radius: 0;
+}
+
+@media (hover: hover) {
+  .square.empty:hover {
+    border-color: var(--empty-square-border-color-hover);
+  }
+}
+
+.square.complete {
+  background-color: var(--success-background-color);
+  border: none;
+  transform: rotateY(180deg);
+}
+
+.square.complete svg {
+  fill: var(--success-text-color);
+  transform: rotateY(180deg);
+}
+
+.square.shelved {
+  background-color: var(--unplaced-letter-background-color);
+  color: var(--unplaced-letter-text-color);
+}
+
+.square.focused {
+  box-shadow: 0 0 0 var(--letter-gap) #85c0f9;
+}

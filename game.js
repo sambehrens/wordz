@@ -6,6 +6,7 @@ class App {
   }
 
   newGame() {
+    this.game && this.game.cleanUp();
     this.game = new Game();
   }
 
@@ -117,6 +118,10 @@ class Game {
   constructor() {
     this.board = new Board(new WordSpace(word_input_5));
   }
+
+  cleanUp() {
+    this.board.cleanUp();
+  }
 }
 
 class Board {
@@ -143,7 +148,7 @@ class Board {
 
     this.letterMatrix = letterMatrix;
 
-    this.currentLetterMatrix = letterMatrix.map((letterRow, i) =>
+    let currentLetterMatrix = letterMatrix.map((letterRow, i) =>
       letterRow.map((letter, j) => {
         if (
           i % (letterMatrix.length - 1) !== 0 &&
@@ -163,8 +168,21 @@ class Board {
       unEnteredLetters.push(letter);
     });
     this.shelfLetters = shuffleArr(unEnteredLetters);
-    this.hintsGiven = [];
 
+    this.boardTiles = currentLetterMatrix.map((letterRow, i) =>
+      letterRow.map((letter, j) =>
+        this.getSquare(
+          i,
+          j,
+          letter,
+          i % (letterMatrix.length - 1) !== 0 &&
+            j % (letterRow.length - 1) !== 0
+        )
+      )
+    );
+    this.shelfTiles = this.shelfLetters.map((letter, i) =>
+      this.getSquare(0, 0, letter, true, true, i)
+    );
     this.drawBoard();
     this.drawShelf();
     console.log(gameWords);
@@ -209,170 +227,180 @@ class Board {
   }
 
   getSquare(i, j, letter, draggable, shelf, shelfIndex) {
-    const square = document.createElement("div");
-    square.classList.add("square");
-    square.id = letter;
-    if (this.hintsGiven.includes(`${i},${j}`)) {
-      square.classList.add("hint-given");
+    let square = document.createElement("letter-tile");
+    square.setAttribute("letter", letter);
+    let onclick = (event) => this.onClick(event);
+
+    if (letter && !draggable) {
+      square.setAttribute("state", "permanent");
+    } else if (draggable && !letter) {
+      square.setAttribute("state", "empty");
+      square.onclick = onclick;
+    } else if (draggable && this.complete) {
+      square.setAttribute("state", "complete");
+    } else if (shelfIndex === this.focusedIndex) {
+      square.setAttribute("state", "focused");
+    } else if (shelf) {
+      square.setAttribute("state", "shelved");
+      square.onclick = onclick;
+    } else if (draggable) {
+      square.setAttribute("state", "guessed");
+      square.onclick = onclick;
+    } else {
+      square.setAttribute("state", "filler");
     }
-    if (letter) {
-      square.classList.add("with-contents");
-    }
-    if (draggable) {
-      square.classList.add("draggable");
-      square.onclick = () => this.changeBoard(i, j, letter, shelf, shelfIndex);
-      if (!letter) {
-        square.classList.add("empty");
-      }
-      if (this.complete) {
-        // Give the complete squares a bit of an animation
-        setTimeout(() => square.classList.add("complete"), (i + j - 2) * 100);
-      }
-    }
-    if (shelf) {
-      square.classList.add("shelved");
-      if (shelfIndex === this.focusedIndex) {
-        square.classList.add("focused");
-      }
-    }
-    const content = document.createElement("div");
-    const letterSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    const letterText = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "text"
-    );
-    letterSvg.setAttribute("viewBox", "0 0 18 18");
-    letterText.setAttribute("x", "50%");
-    letterText.setAttribute("y", "60%");
-    letterText.appendChild(document.createTextNode(letter));
-    content.classList.add("content");
-    letterSvg.appendChild(letterText);
-    square.appendChild(letterSvg);
+    square.setAttribute("data-i-coord", i);
+    square.setAttribute("data-j-coord", j);
     return square;
   }
 
   drawBoard() {
-    document.getElementById("words").innerHTML = "";
-    for (let i = 0; i < this.letterMatrix.length; i++) {
-      for (let j = 0; j < this.letterMatrix[0].length; j++) {
-        const currentLetter = this.currentLetterMatrix[i][j];
-        const hinted = this.hintsGiven.includes(`${i},${j}`);
-        document
-          .getElementById("words")
-          .appendChild(
-            this.getSquare(
-              i,
-              j,
-              currentLetter,
-              i % (this.letterMatrix.length - 1) !== 0 &&
-                j % (this.letterMatrix[0].length - 1) !== 0 &&
-                !hinted,
-              false
-            )
-          );
-      }
+    let wordsContainer = document.getElementById("words");
+    wordsContainer.append(
+      ...this.boardTiles.reduce((acc, row) => [...acc, ...row], [])
+    );
+  }
+
+  updateTile(state, i, j, letter = "") {
+    if (this.boardTiles[i][j].getAttribute("state") !== "hinted") {
+      this.boardTiles[i][j].setAttribute("letter", letter);
+      this.boardTiles[i][j].setAttribute("state", state);
+    }
+    if (this.isComplete()) {
+      loop(this.boardTiles, (tile) => {
+        tile.getAttribute("state") !== "hinted" &&
+          tile.setAttribute("state", "complete");
+      });
     }
   }
 
   drawShelf() {
-    const shelf = document.getElementById("letter-bar");
-    shelf.innerHTML = "";
-    this.shelfLetters.forEach((letter, i) => {
-      shelf.appendChild(this.getSquare(0, 0, letter, true, true, i));
-    });
+    let shelf = document.getElementById("letter-bar");
+    shelf.append(...this.shelfTiles);
   }
 
-  changeBoard(i, j, letter = "", shelf, shelfIndex) {
-    if (this.complete || this.hintsGiven.includes("i,j")) return;
-    if (shelf) {
-      this.focusedIndex = shelfIndex;
-      this.drawShelf();
-    } else if (letter) {
-      this.currentLetterMatrix[i][j] = "";
-      this.shelfLetters.push(letter);
-      this.focusedIndex = this.shelfLetters.length - 1;
-
-      this.checkComplete();
-      this.drawBoard();
-      this.drawShelf();
-    } else if (this.focusedIndex !== -1) {
-      this.currentLetterMatrix[i][j] = this.shelfLetters[this.focusedIndex];
-      this.shelfLetters.splice(this.focusedIndex, 1);
-      this.focusedIndex = -1;
-
-      this.checkComplete();
-      this.drawBoard();
-      this.drawShelf();
+  updateShelf(type, index, letter) {
+    let shelf = document.getElementById("letter-bar");
+    switch (type) {
+      case "remove":
+        let tile = this.shelfTiles.splice(index, 1)[0];
+        shelf.removeChild(tile);
+        break;
+      case "add":
+        this.shelfTiles.push(
+          this.getSquare(0, 0, letter, true, true, this.shelfTiles.length)
+        );
+        shelf.appendChild(this.shelfTiles[this.shelfTiles.length - 1]);
+        break;
+      case "focus":
+        this.shelfTiles.forEach(
+          (tile) =>
+            tile.getAttribute("state") === "focused" &&
+            tile.setAttribute("state", "shelved")
+        );
+        this.shelfTiles[index].setAttribute("state", "focused");
+        break;
+      case "unfocus":
+        this.shelfTiles[index].setAttribute("state", "shelved");
+        break;
     }
   }
 
-  checkComplete() {
+  onClick(event) {
+    switch (event.target.getAttribute("state")) {
+      case "shelved":
+        this.updateShelf("focus", this.shelfTiles.indexOf(event.target));
+        break;
+      case "empty":
+        let focusedIndex = this.shelfTiles.findIndex(
+          (tile) => tile.getAttribute("state") === "focused"
+        );
+        if (focusedIndex === -1) break;
+        let i = event.target.getAttribute("data-i-coord");
+        let j = event.target.getAttribute("data-j-coord");
+        let letter = this.shelfTiles[focusedIndex].getAttribute("letter");
+        this.updateTile("guessed", i, j, letter);
+        this.updateShelf("remove", focusedIndex);
+        break;
+      case "guessed":
+        let letter2 = event.target.getAttribute("letter");
+        let x = event.target.getAttribute("data-i-coord");
+        let y = event.target.getAttribute("data-j-coord");
+        this.updateTile("empty", x, y);
+        this.updateShelf("add", undefined, letter2);
+        this.updateShelf("focus", this.shelfTiles.length - 1);
+        break;
+    }
+  }
+
+  isComplete() {
     let complete = true;
     loop(this.letterMatrix, (letter, i, j) => {
-      if (letter !== this.currentLetterMatrix[i][j]) {
+      if (letter !== this.boardTiles[i][j].getAttribute("letter")) {
         complete = false;
+        return "stop";
       }
     });
-    this.complete = complete;
+    return complete;
   }
 
   hint() {
-    if (this.complete) return;
-    let hintGiven = false;
+    if (this.isComplete()) return;
+    let hintedLetter;
+    let shelfIndex;
     let shuffled = shuffleArr(this.shelfLetters);
+    let hintCoordinates;
     shuffled.some((letter) => {
       // if the spot where the letter would go is taken then go to the next letter
       // if the spot is not taken then add it to the spot and mark hint given and return
       loop(this.letterMatrix, (currentLetter, i, j) => {
-        if (!this.currentLetterMatrix[i][j]) {
+        if (!this.boardTiles[i][j].getAttribute("letter")) {
           if (letter === currentLetter) {
-            this.currentLetterMatrix[i][j] = currentLetter;
-            const indexToRemove = this.shelfLetters.findIndex(
-              (shelfLetter) => shelfLetter === currentLetter
+            const indexToRemove = this.shelfTiles.findIndex(
+              (tile) => tile.getAttribute("letter") === currentLetter
             );
-            this.shelfLetters.splice(indexToRemove, 1);
-            this.hintsGiven.push(`${i},${j}`);
-            hintGiven = true;
+            hintCoordinates = [i, j];
+            shelfIndex = indexToRemove;
+            hintedLetter = currentLetter;
             return "stop";
           }
         }
       });
-      return hintGiven;
+      return hintedLetter;
     });
-    if (this.shelfLetters.length && !hintGiven) {
+    if (this.shelfLetters.length && !hintedLetter) {
       // add the first letter in shelf letters to board and
       // remove the letter that is in it spot and put it in the shelf
       loop(this.letterMatrix, (currentLetter, i, j) => {
         if (shuffled[0] === currentLetter) {
-          const originalLetter = this.currentLetterMatrix[i][j];
-          this.currentLetterMatrix[i][j] = currentLetter;
-          const indexToRemove = this.shelfLetters.findIndex(
-            (shelfLetter) => shelfLetter === currentLetter
+          const indexToRemove = this.shelfTiles.findIndex(
+            (tile) => tile.getAttribute("letter") === currentLetter
           );
-          this.shelfLetters.splice(indexToRemove, 1);
-          this.shelfLetters.push(originalLetter);
-          this.hintsGiven.push(`${i},${j}`);
+          hintCoordinates = [i, j];
+          shelfIndex = indexToRemove;
+          hintedLetter = currentLetter;
           return "stop";
         }
       });
     }
-    this.checkComplete();
-    this.drawShelf();
-    this.drawBoard();
+    hintCoordinates && this.updateShelf("remove", shelfIndex);
+    hintedLetter && this.updateTile("hinted", ...hintCoordinates, hintedLetter);
+  }
+
+  cleanUp() {
+    document.getElementById("words").innerHTML = "";
+    document.getElementById("letter-bar").innerHTML = "";
   }
 }
 
 /**
  * Makes it easy to loop through the board
  */
-function loop(matrix, fun) {
+function loop(matrix, fn) {
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix[0].length; j++) {
       if (i % (matrix.length - 1) !== 0 && j % (matrix[0].length - 1) !== 0) {
-        const stop = fun(matrix[i][j], i, j) === "stop";
+        const stop = fn(matrix[i][j], i, j) === "stop";
         if (stop) {
           return;
         }
