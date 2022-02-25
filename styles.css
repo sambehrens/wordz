@@ -127,6 +127,51 @@ letter-tile {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 1vw;
   justify-content: flex-end;
+}
+
+.menu-section {
+  flex: 1 1 0;
+}
+
+.menu-section:first-child {
+  text-align: left;
+}
+
+.menu-section:last-child {
+  text-align: right;
+}
+
+.game-title {
+  text-align: center;
+}
+
+.settings-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings {
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.settings.hidden {
+  display: none;
+}
+
+.settings-row {
+  display: flex;
+}
+
+.settings-row-label {
+  flex: 1 0 auto;
+  cursor: pointer;
 }
