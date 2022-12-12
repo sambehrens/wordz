@@ -190,6 +190,7 @@ class Board {
 
     document.addEventListener("mousemove", (event) => this.onMouseMove(event));
     document.addEventListener("mouseup", (event) => this.onMouseUp(event));
+    document.addEventListener("ontouchmove", (event) => this.onMouseMove(event));
   }
 
   generateGameWords() {
@@ -234,9 +235,10 @@ class Board {
     let square = document.createElement("letter-tile");
     square.setAttribute("letter", letter);
 
-    // square.onclick = (event) => this.onClick(event);
     square.onmousedown = (event) => this.onMouseDown(event);
+    square.ontouchstart = (event) => this.onMouseDown(event);
     square.onmouseup = (event) => this.onMouseUp(event);
+    square.ontouchend = (event) => this.onMouseDown(event);
 
     if (letter && !draggable) {
       square.setAttribute("state", "permanent");
@@ -307,34 +309,6 @@ class Board {
         break;
       case "unfocus":
         this.shelfTiles[index].setAttribute("state", "shelved");
-        break;
-    }
-  }
-
-  onClick(event) {
-    switch (event.target.getAttribute("state")) {
-      // case "shelved":
-      //   this.updateShelf("focus", this.shelfTiles.indexOf(event.target));
-      //   break;
-      case "empty":
-        let focusedIndex = this.shelfTiles.findIndex(
-          (tile) => tile.getAttribute("state") === "focused"
-        );
-        if (focusedIndex === -1) break;
-        let i = event.target.getAttribute("data-i-coord");
-        let j = event.target.getAttribute("data-j-coord");
-        let letter = this.shelfTiles[focusedIndex].getAttribute("letter");
-        this.updateTile("guessed", i, j, letter);
-        this.updateShelf("remove", focusedIndex);
-        break;
-      case "guessed":
-        console.log("clicked guessed");
-        let letter2 = event.target.getAttribute("letter");
-        let x = event.target.getAttribute("data-i-coord");
-        let y = event.target.getAttribute("data-j-coord");
-        this.updateTile("empty", x, y);
-        this.updateShelf("add", undefined, letter2);
-        this.updateShelf("focus", this.shelfTiles.length - 1);
         break;
     }
   }
