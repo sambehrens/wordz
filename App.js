@@ -5,6 +5,13 @@ class App {
     this.newGame();
     this.settingsOpen = false;
     this.settings = [{ label: "Dark mode", type: "toggle" }];
+
+    document.getElementById("hint-button").addEventListener("click", () => {
+      this.game.board.hint();
+    });
+    document.getElementById("new-game-button").addEventListener("click", () => {
+      this.newGame();
+    });
   }
 
   newGame() {
@@ -49,10 +56,3 @@ class App {
 
 const app = new App();
 
-function hint() {
-  app.game.board.hint();
-}
-
-function restart() {
-  app.newGame();
-}
