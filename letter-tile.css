@@ -86,6 +86,9 @@
 }
 
 .square.focused {
-  border: 2px solid #85c0f9;
-  color: #85c0f9;
+  border: 2px solid var(--focused-letter-color);
+}
+
+.square.focused svg {
+  fill: var(--focused-letter-color);
 }

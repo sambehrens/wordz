@@ -13,6 +13,7 @@
   --unplaced-letter-border-color: #24292f;
   --empty-square-border-color: #d3d6da;
   --empty-square-border-color-hover: #abb1ba;
+  --focused-letter-color: #0d65f2;
 
   --max-width: 65vh;
   --letter-gap: 0.8vh;
@@ -34,6 +35,7 @@
     --unplaced-letter-border-color: #e8eaed;
     --empty-square-border-color: #3a3a3c;
     --empty-square-border-color-hover: #4b4b4e;
+    --focused-letter-color: #85c0f9;
   }
 }
 
