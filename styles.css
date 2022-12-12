@@ -144,6 +144,7 @@ letter-tile {
 
 .game-title {
   text-align: center;
+  color: var(--text-color);
 }
 
 .settings-overlay {
