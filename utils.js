@@ -1,7 +1,7 @@
 /**
  * Makes it easy to loop through the board
  */
-function loop(matrix, fn) {
+export function loop(matrix, fn) {
   for (let i = 0; i < matrix.length; i++) {
     for (let j = 0; j < matrix[0].length; j++) {
       if (i % (matrix.length - 1) !== 0 && j % (matrix[0].length - 1) !== 0) {
@@ -26,7 +26,7 @@ function loop(matrix, fn) {
  * shuffle([1, 2, 3, 4])
  * // => [4, 1, 3, 2]
  */
-function shuffleArr(array) {
+export function shuffleArr(array) {
   const length = array == null ? 0 : array.length;
   if (!length) {
     return [];
@@ -47,6 +47,6 @@ function shuffleArr(array) {
  * @param {number} upperBound Note this is exclusive
  * @returns {number}
  */
-function random(upperBound) {
+export function random(upperBound) {
   return Math.floor(Math.random() * upperBound);
 }

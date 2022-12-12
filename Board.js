@@ -1,4 +1,6 @@
-class Board {
+import { shuffleArr, loop } from './utils.js';
+
+export class Board {
   constructor(wordSpace) {
     this.wordSpace = wordSpace;
 

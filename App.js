@@ -1,3 +1,5 @@
+import { Game } from "./Game.js";
+
 class App {
   constructor() {
     this.newGame();
@@ -10,7 +12,7 @@ class App {
     this.game = new Game();
   }
 
-  getControl(settingType) {
+  getControl() {
     const input = document.createElement("input");
     input.type = "checkbox";
   }

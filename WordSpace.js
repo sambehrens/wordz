@@ -1,8 +1,10 @@
+import { random } from './utils.js';
+
 /**
  * The space of all available words.
  * I don't why I called it this. I guess it sounded fancy.
  */
-class WordSpace {
+export class WordSpace {
   static letters = "abcdefghijklmnopqrstuvwxyz";
 
   constructor(...wordInputs) {
@@ -66,4 +68,3 @@ class WordSpace {
       : null;
   }
 }
-
