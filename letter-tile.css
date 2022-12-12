@@ -87,4 +87,5 @@
 
 .square.focused {
   border: 2px solid #85c0f9;
+  color: #85c0f9;
 }
