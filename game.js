@@ -194,6 +194,7 @@ class Board {
     document.addEventListener("touchend", (event) => this.onMouseUp(event));
     // document.addEventListener("mousedown", (event) => this.onMouseDown(event));
     // document.addEventListener("touchstart", (event) => this.onMouseDown(event));
+    this.menuNode = document.getElementById("menu");
   }
 
   generateGameWords() {
@@ -347,7 +348,7 @@ class Board {
   }
 
   onMouseUp(event) {
-    event.preventDefault();
+    if (!this.menuNode.contains(event.target)) event.preventDefault();
     let target = event.target;
     let changedTouches = event.changedTouches;
     if (changedTouches && changedTouches[0]) {
