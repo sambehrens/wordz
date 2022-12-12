@@ -340,11 +340,11 @@ class Board {
     }
     if (this.draggingTile === null) return;
     this.draggingTile.style.transform = `translate(${
-      event.pageX -
+      x -
       this.draggingTile.offsetLeft -
       this.draggingTile.offsetWidth / 2
     }px,${
-      event.pageY -
+      y -
       this.draggingTile.offsetTop -
       this.draggingTile.offsetHeight / 2
     }px)`;
