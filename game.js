@@ -315,7 +315,6 @@ class Board {
   }
 
   onMouseDown(event) {
-    console.log("mouse down");
     switch (event.target.getAttribute("state")) {
       case "focused":
       case "shelved":
@@ -328,10 +327,10 @@ class Board {
         this.focusedIndex = -1;
         break;
     }
+    event.preventDefault();
   }
 
   onMouseMove(event) {
-    console.log("mouse move");
     if (this.draggingTile === null) return;
     this.draggingTile.style.transform = `translate(${
       event.pageX -
@@ -344,13 +343,12 @@ class Board {
     }px)`;
     this.draggingTile.style.zIndex = 1;
     this.draggingTile.style.pointerEvents = "none";
+    event.preventDefault();
   }
 
   onMouseUp(event) {
-    console.log("mouse up");
-    console.log(event.target);
+    event.preventDefault();
     let target = event.target;
-    console.log(event);
     let changedTouches = event.changedTouches;
     if (changedTouches && changedTouches[0]) {
       target = document.elementFromPoint(
@@ -358,7 +356,6 @@ class Board {
         changedTouches[0].clientY
       );
     }
-    console.log(target);
     if (this.draggingTile === null) {
       if (this.focusedIndex !== -1) {
         switch (target.getAttribute("state")) {
