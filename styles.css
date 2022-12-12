@@ -14,7 +14,7 @@
   --empty-square-border-color: #d3d6da;
   --empty-square-border-color-hover: #abb1ba;
 
-  --max-width: 50vh;
+  --max-width: 65vh;
   --letter-gap: 0.8vh;
 }
 
@@ -95,7 +95,7 @@ button {
   flex-wrap: wrap;
   gap: var(--letter-gap);
   justify-content: center;
-  max-width: 50vh;
+  max-width: var(--max-width);
 }
 
 letter-tile {
