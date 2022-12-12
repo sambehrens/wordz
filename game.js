@@ -162,6 +162,7 @@ class Board {
     );
 
     this.focusedIndex = -1;
+    this.draggingTile = null;
     this.complete = false;
     const unEnteredLetters = [];
     loop(this.letterMatrix, (letter) => {
@@ -186,6 +187,9 @@ class Board {
     this.drawBoard();
     this.drawShelf();
     console.log(gameWords);
+
+    document.addEventListener("mousemove", (event) => this.onMouseMove(event));
+    document.addEventListener("mouseup", (event) => this.onMouseUp(event));
   }
 
   generateGameWords() {
@@ -229,23 +233,23 @@ class Board {
   getSquare(i, j, letter, draggable, shelf, shelfIndex) {
     let square = document.createElement("letter-tile");
     square.setAttribute("letter", letter);
-    let onclick = (event) => this.onClick(event);
+
+    // square.onclick = (event) => this.onClick(event);
+    square.onmousedown = (event) => this.onMouseDown(event);
+    square.onmouseup = (event) => this.onMouseUp(event);
 
     if (letter && !draggable) {
       square.setAttribute("state", "permanent");
     } else if (draggable && !letter) {
       square.setAttribute("state", "empty");
-      square.onclick = onclick;
     } else if (draggable && this.complete) {
       square.setAttribute("state", "complete");
     } else if (shelfIndex === this.focusedIndex) {
       square.setAttribute("state", "focused");
     } else if (shelf) {
       square.setAttribute("state", "shelved");
-      square.onclick = onclick;
     } else if (draggable) {
       square.setAttribute("state", "guessed");
-      square.onclick = onclick;
     } else {
       square.setAttribute("state", "filler");
     }
@@ -262,9 +266,10 @@ class Board {
   }
 
   updateTile(state, i, j, letter = "") {
-    if (this.boardTiles[i][j].getAttribute("state") !== "hinted") {
-      this.boardTiles[i][j].setAttribute("letter", letter);
-      this.boardTiles[i][j].setAttribute("state", state);
+    let tile = this.boardTiles[i][j];
+    if (tile.getAttribute("state") !== "hinted") {
+      tile.setAttribute("letter", letter);
+      tile.setAttribute("state", state);
     }
     if (this.isComplete()) {
       loop(this.boardTiles, (tile) => {
@@ -308,9 +313,9 @@ class Board {
 
   onClick(event) {
     switch (event.target.getAttribute("state")) {
-      case "shelved":
-        this.updateShelf("focus", this.shelfTiles.indexOf(event.target));
-        break;
+      // case "shelved":
+      //   this.updateShelf("focus", this.shelfTiles.indexOf(event.target));
+      //   break;
       case "empty":
         let focusedIndex = this.shelfTiles.findIndex(
           (tile) => tile.getAttribute("state") === "focused"
@@ -323,6 +328,7 @@ class Board {
         this.updateShelf("remove", focusedIndex);
         break;
       case "guessed":
+        console.log("clicked guessed");
         let letter2 = event.target.getAttribute("letter");
         let x = event.target.getAttribute("data-i-coord");
         let y = event.target.getAttribute("data-j-coord");
@@ -331,6 +337,99 @@ class Board {
         this.updateShelf("focus", this.shelfTiles.length - 1);
         break;
     }
+  }
+
+  onMouseDown(event) {
+    switch (event.target.getAttribute("state")) {
+      case "focused":
+      case "shelved":
+        this.draggingTile = event.target;
+        this.focusedIndex = this.shelfTiles.indexOf(event.target);
+        this.updateShelf("focus", this.shelfTiles.indexOf(event.target));
+        break;
+      case "guessed":
+        this.draggingTile = event.target;
+        this.focusedIndex = -1;
+        break;
+    }
+  }
+
+  onMouseMove(event) {
+    if (this.draggingTile === null) return;
+    this.draggingTile.style.transform = `translate(${
+      event.pageX -
+      this.draggingTile.offsetLeft -
+      this.draggingTile.offsetWidth / 2
+    }px,${
+      event.pageY -
+      this.draggingTile.offsetTop -
+      this.draggingTile.offsetHeight / 2
+    }px)`;
+    this.draggingTile.style.zIndex = 1;
+    this.draggingTile.style.pointerEvents = "none";
+  }
+
+  onMouseUp(event) {
+    event.stopPropagation();
+    if (this.draggingTile === null) {
+      if (this.focusedIndex !== -1) {
+        switch (event.target.getAttribute("state")) {
+          case "empty":
+            let i = event.target.getAttribute("data-i-coord");
+            let j = event.target.getAttribute("data-j-coord");
+            let letter =
+              this.shelfTiles[this.focusedIndex].getAttribute("letter");
+            this.updateTile("guessed", i, j, letter);
+            this.updateShelf("remove", this.focusedIndex);
+            this.focusedIndex = -1;
+            break;
+        }
+      }
+      return;
+    }
+    let draggingTileState = this.draggingTile.getAttribute("state");
+    let letter = this.draggingTile.getAttribute("letter");
+    let draggingTileI = this.draggingTile.getAttribute("data-i-coord");
+    let draggingTileJ = this.draggingTile.getAttribute("data-j-coord");
+    let targetState = event.target.getAttribute("state");
+    let targetLetter = event.target.getAttribute("letter");
+    switch (targetState) {
+      case "guessed":
+      case "empty":
+        let i = event.target.getAttribute("data-i-coord");
+        let j = event.target.getAttribute("data-j-coord");
+        this.updateTile("guessed", i, j, letter);
+        if (draggingTileState === "guessed") {
+          this.updateTile("empty", draggingTileI, draggingTileJ);
+          this.draggingTile.style.transform = "none";
+        }
+        if (this.focusedIndex !== -1) {
+          this.updateShelf("remove", this.focusedIndex);
+        }
+        if (targetState === "guessed") {
+          this.updateShelf("add", undefined, targetLetter);
+          this.updateShelf("focus", this.shelfTiles.length - 1);
+          this.focusedIndex = this.shelfTiles.length - 1;
+        }
+        if (targetState === "empty") {
+          this.focusedIndex = -1;
+        }
+        break;
+      default:
+        this.draggingTile.style.transform = "none";
+        if (draggingTileState === "guessed") {
+          this.updateTile("empty", draggingTileI, draggingTileJ);
+        }
+        if (draggingTileState !== "focused") {
+          this.updateShelf("add", undefined, letter);
+          this.updateShelf("focus", this.shelfTiles.length - 1);
+          this.focusedIndex = this.shelfTiles.length - 1;
+        }
+        break;
+    }
+    this.draggingTile.style.zIndex = 0;
+    this.draggingTile.style.pointerEvents = "auto";
+    this.draggingTile = null;
   }
 
   isComplete() {
