@@ -337,7 +337,6 @@ export class Board {
       });
       return hintedLetter;
     });
-    console.log("hinted letter", hintedLetter)
     if (this.shelfTiles.length && !hintedLetter) {
       // add the first letter in shelf letters to board and
       // remove the letter that is in it spot and put it in the shelf
@@ -354,7 +353,6 @@ export class Board {
         }
       });
     }
-    console.log(hintCoordinates);
     hintCoordinates && this.updateShelf("remove", shelfIndex);
     hintedLetter && this.updateTile("hinted", ...hintCoordinates, hintedLetter);
   }
