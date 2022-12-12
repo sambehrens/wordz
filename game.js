@@ -238,7 +238,7 @@ class Board {
     square.onmousedown = (event) => this.onMouseDown(event);
     square.ontouchstart = (event) => this.onMouseDown(event);
     square.onmouseup = (event) => this.onMouseUp(event);
-    square.ontouchend = (event) => this.onMouseDown(event);
+    square.ontouchend = (event) => this.onMouseUp(event);
 
     if (letter && !draggable) {
       square.setAttribute("state", "permanent");
