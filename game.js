@@ -190,7 +190,7 @@ class Board {
 
     document.addEventListener("mousemove", (event) => this.onMouseMove(event));
     document.addEventListener("mouseup", (event) => this.onMouseUp(event));
-    document.addEventListener("ontouchmove", (event) => this.onMouseMove(event));
+    document.addEventListener("touchmove", (event) => this.onMouseMove(event));
   }
 
   generateGameWords() {
