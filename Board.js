@@ -64,12 +64,14 @@ export class Board {
     this.drawShelf();
     console.log(gameWords);
 
-    document.addEventListener("mousemove", (event) => this.onMouseMove(event));
-    document.addEventListener("mouseup", (event) => this.onMouseUp(event));
-    document.addEventListener("touchmove", (event) => this.onMouseMove(event));
-    document.addEventListener("touchend", (event) => this.onMouseUp(event));
-    // document.addEventListener("mousedown", (event) => this.onMouseDown(event));
-    // document.addEventListener("touchstart", (event) => this.onMouseDown(event));
+    this.mousemove = this.onMouseMove.bind(this);
+    this.mouseup = this.onMouseUp.bind(this);
+
+    document.addEventListener("mousemove", this.mousemove);
+    document.addEventListener("mouseup", this.mouseup);
+    document.addEventListener("touchmove", this.mousemove);
+    document.addEventListener("touchend", this.mouseup);
+
     this.menuNode = document.getElementById("menu");
   }
 
@@ -357,5 +359,10 @@ export class Board {
   cleanUp() {
     document.getElementById("words").innerHTML = "";
     document.getElementById("letter-bar").innerHTML = "";
+
+    document.removeEventListener("mousemove", this.mousemove);
+    document.removeEventListener("mouseup", this.mouseup);
+    document.removeEventListener("touchmove", this.mousemove);
+    document.removeEventListener("touchend", this.mouseup);
   }
 }
