@@ -44,7 +44,7 @@ export class Board {
     loop(this.letterMatrix, (letter) => {
       unEnteredLetters.push(letter);
     });
-    this.shelfLetters = shuffleArr(unEnteredLetters);
+    let shelfLetters = shuffleArr(unEnteredLetters);
 
     this.boardTiles = currentLetterMatrix.map((letterRow, i) =>
       letterRow.map((letter, j) =>
@@ -57,7 +57,7 @@ export class Board {
         )
       )
     );
-    this.shelfTiles = this.shelfLetters.map((letter, i) =>
+    this.shelfTiles = shelfLetters.map((letter, i) =>
       this.getSquare(0, 0, letter, true, true, i)
     );
     this.drawBoard();
@@ -317,13 +317,13 @@ export class Board {
     if (this.isComplete()) return;
     let hintedLetter;
     let shelfIndex;
-    let shuffled = shuffleArr(this.shelfLetters);
+    let shuffled = shuffleArr(this.shelfTiles).map(tile => tile.getAttribute("letter"));
     let hintCoordinates;
     shuffled.some((letter) => {
       // if the spot where the letter would go is taken then go to the next letter
       // if the spot is not taken then add it to the spot and mark hint given and return
       loop(this.letterMatrix, (currentLetter, i, j) => {
-        if (!this.boardTiles[i][j].getAttribute("letter")) {
+        if (this.boardTiles[i][j].getAttribute("state") === "empty") {
           if (letter === currentLetter) {
             const indexToRemove = this.shelfTiles.findIndex(
               (tile) => tile.getAttribute("letter") === currentLetter
@@ -337,7 +337,8 @@ export class Board {
       });
       return hintedLetter;
     });
-    if (this.shelfLetters.length && !hintedLetter) {
+    console.log("hinted letter", hintedLetter)
+    if (this.shelfTiles.length && !hintedLetter) {
       // add the first letter in shelf letters to board and
       // remove the letter that is in it spot and put it in the shelf
       loop(this.letterMatrix, (currentLetter, i, j) => {
@@ -348,10 +349,12 @@ export class Board {
           hintCoordinates = [i, j];
           shelfIndex = indexToRemove;
           hintedLetter = currentLetter;
+          this.updateShelf("add", undefined, this.boardTiles[i][j].getAttribute("letter"));
           return "stop";
         }
       });
     }
+    console.log(hintCoordinates);
     hintCoordinates && this.updateShelf("remove", shelfIndex);
     hintedLetter && this.updateTile("hinted", ...hintCoordinates, hintedLetter);
   }
