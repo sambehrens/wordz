@@ -191,6 +191,9 @@ class Board {
     document.addEventListener("mousemove", (event) => this.onMouseMove(event));
     document.addEventListener("mouseup", (event) => this.onMouseUp(event));
     document.addEventListener("touchmove", (event) => this.onMouseMove(event));
+    document.addEventListener("touchend", (event) => this.onMouseUp(event));
+    // document.addEventListener("mousedown", (event) => this.onMouseDown(event));
+    // document.addEventListener("touchstart", (event) => this.onMouseDown(event));
   }
 
   generateGameWords() {
@@ -237,8 +240,6 @@ class Board {
 
     square.onmousedown = (event) => this.onMouseDown(event);
     square.ontouchstart = (event) => this.onMouseDown(event);
-    square.onmouseup = (event) => this.onMouseUp(event);
-    square.ontouchend = (event) => this.onMouseUp(event);
 
     if (letter && !draggable) {
       square.setAttribute("state", "permanent");
@@ -314,6 +315,7 @@ class Board {
   }
 
   onMouseDown(event) {
+    console.log("mouse down");
     switch (event.target.getAttribute("state")) {
       case "focused":
       case "shelved":
@@ -329,6 +331,7 @@ class Board {
   }
 
   onMouseMove(event) {
+    console.log("mouse move");
     if (this.draggingTile === null) return;
     this.draggingTile.style.transform = `translate(${
       event.pageX -
@@ -344,13 +347,24 @@ class Board {
   }
 
   onMouseUp(event) {
-    event.stopPropagation();
+    console.log("mouse up");
+    console.log(event.target);
+    let target = event.target;
+    console.log(event);
+    let changedTouches = event.changedTouches;
+    if (changedTouches && changedTouches[0]) {
+      target = document.elementFromPoint(
+        changedTouches[0].clientX,
+        changedTouches[0].clientY
+      );
+    }
+    console.log(target);
     if (this.draggingTile === null) {
       if (this.focusedIndex !== -1) {
-        switch (event.target.getAttribute("state")) {
+        switch (target.getAttribute("state")) {
           case "empty":
-            let i = event.target.getAttribute("data-i-coord");
-            let j = event.target.getAttribute("data-j-coord");
+            let i = target.getAttribute("data-i-coord");
+            let j = target.getAttribute("data-j-coord");
             let letter =
               this.shelfTiles[this.focusedIndex].getAttribute("letter");
             this.updateTile("guessed", i, j, letter);
@@ -365,13 +379,13 @@ class Board {
     let letter = this.draggingTile.getAttribute("letter");
     let draggingTileI = this.draggingTile.getAttribute("data-i-coord");
     let draggingTileJ = this.draggingTile.getAttribute("data-j-coord");
-    let targetState = event.target.getAttribute("state");
-    let targetLetter = event.target.getAttribute("letter");
+    let targetState = target.getAttribute("state");
+    let targetLetter = target.getAttribute("letter");
     switch (targetState) {
       case "guessed":
       case "empty":
-        let i = event.target.getAttribute("data-i-coord");
-        let j = event.target.getAttribute("data-j-coord");
+        let i = target.getAttribute("data-i-coord");
+        let j = target.getAttribute("data-j-coord");
         this.updateTile("guessed", i, j, letter);
         if (draggingTileState === "guessed") {
           this.updateTile("empty", draggingTileI, draggingTileJ);
