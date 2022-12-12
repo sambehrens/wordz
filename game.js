@@ -332,6 +332,12 @@ class Board {
   }
 
   onMouseMove(event) {
+    let x = event.pageX;
+    let y = event.pageY;
+    if (event.type === "touchmove") {
+      x = event.touches[0].pageX;
+      y = event.touches[0].pageY;
+    }
     if (this.draggingTile === null) return;
     this.draggingTile.style.transform = `translate(${
       event.pageX -
