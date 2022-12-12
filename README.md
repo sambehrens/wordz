@@ -1,9 +1,9 @@
-# Wordz
+# The Word Matrix
 
-A game that I copied from [this hacker news post](https://news.ycombinator.com/item?id=22422347) to see if I could. Turns out if you make it crappy then it is pretty easy. Thanks Daniel Janus for the idea. Go check out his game if you want to play the real thing.
+_Formerly Wordz_
 
-Or if you want *(why would you want to)* you can play my version.
+A game that I created based on [this hacker news post](https://news.ycombinator.com/item?id=22422347) to see if I could. Thanks Daniel Janus for the idea.
 
-https://sambehrens.github.io/wordz
+[www.thewordmatrix.app](https://www.thewordmatrix.app)
 
 <div align="center"><img src="apple-touch-icon.png"></img></div>
